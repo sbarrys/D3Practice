@@ -1,12 +1,13 @@
 import * as d3 from "d3";
+import { redditObject } from "./redditFormat";
 
-let width = 700;
-let height = 300;
+let width = 1000;
+let height = 900;
 
 //body에 svg모눈종이 올려주기. 모눈종이 크기 셋팅하기.
 let svg = d3.select("body").append("svg");
 svg.attr("width", width);
-svg.attr("width", height);
+svg.attr("height", height);
 //차트는 다음과같이 Margin을 준다.
 let plotMargins = {
   top: 30,
@@ -48,4 +49,20 @@ let yAxisGroup = plotGroup
   .classed("y", true)
   .classed("axis", true)
   .call(yAxis);
+///////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////
+//데이터 바인딩
+d3.json<redditObject>("https://api.reddit.com", (error, data) => {
+  if (error) {
+    console.error(error);
+  } else {
+let prepared = data.data.children.map((d) => {
+  return {
+    date: new Date(d.data.created * 1000),
+    score: d.data.score,
+  };
+});
+console.log(prepared);
+
 ///////////////////////////////////////////////////////////////////////

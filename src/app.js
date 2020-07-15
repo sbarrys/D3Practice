@@ -1,10 +1,10 @@
 import * as d3 from "d3";
-var width = 700;
-var height = 300;
+var width = 1000;
+var height = 900;
 //body에 svg모눈종이 올려주기. 모눈종이 크기 셋팅하기.
 var svg = d3.select("body").append("svg");
 svg.attr("width", width);
-svg.attr("width", height);
+svg.attr("height", height);
 //차트는 다음과같이 Margin을 준다.
 var plotMargins = {
     top: 30,
@@ -44,5 +44,24 @@ var yAxisGroup = plotGroup
     .classed("y", true)
     .classed("axis", true)
     .call(yAxis);
+///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//데이터 바인딩
+d3.json("https://api.reddit.com", function (error, data) {
+    if (error) {
+        console.error(error);
+    }
+    else {
+        var prepared = data.data.children.map(function (d) {
+            return {
+                date: new Date(d.data.created * 1000),
+                score: d.data.score,
+            };
+        });
+        console.log(prepared);
+        ///////////////////////////////////////////////////////////////////////
+    }
+    ///////////////////////////////////////////////////////////////////////
+});
 ///////////////////////////////////////////////////////////////////////
 //# sourceMappingURL=app.js.map
