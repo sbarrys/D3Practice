@@ -1,8 +1,6 @@
 (function (factory) {
-	typeof define === 'function' && define.amd ? define(factory) :
-	factory();
-}((function () { 'use strict';
+  typeof define === "function" && define.amd ? define(factory) : factory();
+})(function () {
+  "use strict";
 
-
-
-})));
+});
