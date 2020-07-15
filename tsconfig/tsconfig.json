@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true, //모든것은 타입을 명시적으로 가져야
+    "target": "es5", //es5 버전의 자바스크립트로 컴파일해라.
+    "sourceMap": true,
+    "declaration": true,
+    "module": "es2015", //es2015 module 타입 사용
+    "moduleResolution": "node"
+  },
+  "exclude": ["node_modules", "dist"]
+}
