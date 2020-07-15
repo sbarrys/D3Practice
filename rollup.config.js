@@ -2,9 +2,12 @@
 import resolve from "rollup-plugin-node-resolve";
 
 export default {
-  entry: "src/app.js",
-  dest: "src/bundle.js",
-  format: "umd",
+  input: "./src/app.js",
+  output: {
+    file: "./src/bundle.js",
+    format: "umd",
+    name: "app",
+  },
   plugins: [
     resolve({
       jsnext: true,
@@ -12,5 +15,4 @@ export default {
       module: true,
     }),
   ],
-  moduleName: "app",
 };
