@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 import { redditObject } from "./redditFormat";
+import * as topojson from "topojson";
+
 let width = 1000;
 let height = 900;
 
@@ -93,4 +95,38 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
 /////////////////////////////////////////////////////////////////////////////////
 ////MAP 만들기 ////////////////////////////////////////////////////////////////////
 
-let svgMap = d3.select("map").append("svg");
+//모눈종이
+let svgForMap = d3.select("map").append("svg");
+svgForMap.attr("height", height).attr("width", width);
+
+let map = svgForMap.append("g").attr("id", "map"),
+  places = svgForMap.append("g").attr("id", "places");
+
+let projection = d3
+  .geoMercator()
+  .center([126.9895, 37.5651])
+  .scale(1000)
+  .translate([width / 2, height / 2]);
+
+let path = d3.geoPath().projection(projection);
+
+const seoulPath = require("./seoulPath.json");
+const geojson = topojson.feature(
+  seoulPath,
+  seoulPath.objects.seoul_municipalities_geo
+);
+var bounds = path.bounds(geojson);
+const widthScale = (bounds[1][0] - bounds[0][0]) / width;
+const heightScale = (bounds[1][1] - bounds[0][1]) / height;
+const scale = 1 / Math.max(widthScale, heightScale);
+const xoffset = width / 2 - (scale * (bounds[1][0] + bounds[0][0])) / 2 + 10;
+const yoffset = height / 2 - (scale * (bounds[1][1] + bounds[0][1])) / 2 + 80;
+projection.scale(scale).translate([xoffset, yoffset]);
+console.log(geojson);
+const center = d3.geoCentroid(geojson);
+map
+  .selectAll("path")
+  .data(geojson.properties.feature)
+  .enter()
+  .append("path")
+  .attr("d", path);
