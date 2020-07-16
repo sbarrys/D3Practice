@@ -5677,7 +5677,7 @@
   var width = 1000;
   var height = 900;
   //body에 svg모눈종이 올려주기. 모눈종이 크기 셋팅하기.
-  var svg = select("body").append("svg");
+  var svg = select("chart").append("svg");
   svg.attr("width", width);
   svg.attr("height", height);
   //차트는 다음과같이 Margin을 준다.
@@ -5693,7 +5693,6 @@
       .attr("transform", "translate(" + plotMargins.left + "," + plotMargins.top + ")"); //Translate(60,60) =>  60,60만큼 이동  //Rotate : 몇도 만큼 회전  //Scale(10) 확대
   var plotWidth = width - plotMargins.left - plotMargins.right;
   var plotHeight = height - plotMargins.top - plotMargins.bottom;
-  ////////////////////////////////////////////////////////////////////
   // 순서 : scale 설정 ->  axis 에 scale 을 추가 -> plot 에 axis 추가 //
   //x축의 눈금은 시간으로 두었다.
   var xScale = time().range([0, plotWidth]);
@@ -5705,8 +5704,6 @@
       .classed("x", true)
       .classed("axis", true)
       .attr("transform", "translate(" + 0 + "," + plotHeight + ")");
-  ///////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////
   // 순서 : scale 설정 ->  axis 에 scale 을 추가 -> plot 에 axis 추가 //
   //y축의 눈금은 0-100까지 두었다. 도메인설정은 밑에서 한다.
   var yScale = linear$1().range([plotHeight, 0]);
@@ -5714,8 +5711,6 @@
   var yAxis = axisLeft(yScale);
   //ploat 에  axis 추가.
   var yAxisGroup = plotGroup.append("g").classed("y", true).classed("axis", true);
-  ///////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////
   //데이터 바인딩
   json("https://api.reddit.com", function (error, data) {
       if (error) {
@@ -5730,7 +5725,6 @@
                   score: d.data.score,
               };
           });
-          ///////////////////////////////////////////////////////////////////////
           //축 도메인 설정
           xScale.domain(extent(prepared, function (d) { return d.date; })).nice();
           xAxisGroup.call(xAxis);
@@ -5751,5 +5745,8 @@
               .attr("transform", function (d, i) { return "translate(" + xScale(d.date) + "," + (plotHeight - yScale(d.score)) + ")"; });
       }
   });
+  /////////////////////////////////////////////////////////////////////////////////
+  ////MAP 만들기 ////////////////////////////////////////////////////////////////////
+  var svgMap = select("map").append("svg");
 
 })));

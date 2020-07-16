@@ -4,7 +4,7 @@ let width = 1000;
 let height = 900;
 
 //body에 svg모눈종이 올려주기. 모눈종이 크기 셋팅하기.
-let svg = d3.select("body").append("svg");
+let svg = d3.select("chart").append("svg");
 svg.attr("width", width);
 svg.attr("height", height);
 //차트는 다음과같이 Margin을 준다.
@@ -22,7 +22,6 @@ let plotGroup = svg
 let plotWidth = width - plotMargins.left - plotMargins.right;
 let plotHeight = height - plotMargins.top - plotMargins.bottom;
 
-////////////////////////////////////////////////////////////////////
 // 순서 : scale 설정 ->  axis 에 scale 을 추가 -> plot 에 axis 추가 //
 //x축의 눈금은 시간으로 두었다.
 let xScale = d3.scaleTime().range([0, plotWidth]);
@@ -34,9 +33,6 @@ let xAxisGroup = plotGroup
   .classed("x", true)
   .classed("axis", true)
   .attr("transform", `translate(${0},${plotHeight})`);
-///////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////
 // 순서 : scale 설정 ->  axis 에 scale 을 추가 -> plot 에 axis 추가 //
 //y축의 눈금은 0-100까지 두었다. 도메인설정은 밑에서 한다.
 let yScale = d3.scaleLinear().range([plotHeight, 0]);
@@ -44,8 +40,7 @@ let yScale = d3.scaleLinear().range([plotHeight, 0]);
 let yAxis = d3.axisLeft(yScale);
 //ploat 에  axis 추가.
 let yAxisGroup = plotGroup.append("g").classed("y", true).classed("axis", true);
-///////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
+
 //데이터 바인딩
 d3.json<redditObject>("https://api.reddit.com", (error, data) => {
   if (error) {
@@ -60,7 +55,7 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
         score: d.data.score,
       };
     });
-    ///////////////////////////////////////////////////////////////////////
+
     //축 도메인 설정
     xScale.domain(d3.extent(prepared, (d) => d.date)).nice();
     xAxisGroup.call(xAxis);
@@ -95,3 +90,7 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
       );
   }
 });
+/////////////////////////////////////////////////////////////////////////////////
+////MAP 만들기 ////////////////////////////////////////////////////////////////////
+
+let svgMap = d3.select("map").append("svg");
