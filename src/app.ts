@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import { redditObject } from "./redditFormat";
-
 let width = 1000;
 let height = 900;
 
@@ -34,21 +33,17 @@ let xAxisGroup = plotGroup
   .append("g")
   .classed("x", true)
   .classed("axis", true)
-  .attr("transform", `translate(${0},${plotHeight})`)
-  .call(xAxis);
+  .attr("transform", `translate(${0},${plotHeight})`);
 ///////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////
 // 순서 : scale 설정 ->  axis 에 scale 을 추가 -> plot 에 axis 추가 //
-//x축의 눈금은 시간으로 두었다.
+//y축의 눈금은 0-100까지 두었다. 도메인설정은 밑에서 한다.
 let yScale = d3.scaleLinear().range([plotHeight, 0]);
 //축 생성
 let yAxis = d3.axisLeft(yScale);
 //ploat 에  axis 추가.
-let yAxisGroup = plotGroup
-  .append("g")
-  .classed("y", true)
-  .classed("axis", true)
-  .call(yAxis);
+let yAxisGroup = plotGroup.append("g").classed("y", true).classed("axis", true);
 ///////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////
@@ -57,12 +52,42 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
   if (error) {
     console.error(error);
   } else {
-let prepared = data.data.children.map((d) => {
-  return {
-    date: new Date(d.data.created * 1000),
-    score: d.data.score,
-  };
-});
-console.log(prepared);
+    let prepared = data.data.children.map((d) => {
+      return {
+        date: new Date(d.data.created * 1000),
+        score: d.data.score,
+      };
+    });
+    ///////////////////////////////////////////////////////////////////////
+    //축 도메인 설정
+    xScale.domain(d3.extent(prepared, (d) => d.date)).nice();
+    xAxisGroup.call(xAxis);
+    yScale.domain(d3.extent(prepared, (d) => d.score)).nice();
+    yAxisGroup.call(yAxis);
 
-///////////////////////////////////////////////////////////////////////
+    //데이터 실어주기
+
+    let pointsGroup = plotGroup.append("g").classed("points", true);
+    var dataBound = pointsGroup.selectAll(".post").data(prepared);
+    //표 초기화
+    dataBound.exit().remove();
+    var enterSelection: d3.Selection<
+      d3.BaseType,
+      {
+        date: Date;
+        score: number;
+      },
+      SVGGElement,
+      unknown
+    > = dataBound.enter().append("g").classed("post", true);
+
+    enterSelection.append("circle").attr("r", 2).style("fill", "red");
+    // update all existing points
+    enterSelection
+      .merge(dataBound)
+      .attr(
+        "transform",
+        (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
+      );
+  }
+});
