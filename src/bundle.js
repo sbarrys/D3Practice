@@ -132,6 +132,76 @@
     return stop < start ? -step1 : step1;
   }
 
+  function max(values, valueof) {
+    var n = values.length,
+        i = -1,
+        value,
+        max;
+
+    if (valueof == null) {
+      while (++i < n) { // Find the first comparable value.
+        if ((value = values[i]) != null && value >= value) {
+          max = value;
+          while (++i < n) { // Compare the remaining values.
+            if ((value = values[i]) != null && value > max) {
+              max = value;
+            }
+          }
+        }
+      }
+    }
+
+    else {
+      while (++i < n) { // Find the first comparable value.
+        if ((value = valueof(values[i], i, values)) != null && value >= value) {
+          max = value;
+          while (++i < n) { // Compare the remaining values.
+            if ((value = valueof(values[i], i, values)) != null && value > max) {
+              max = value;
+            }
+          }
+        }
+      }
+    }
+
+    return max;
+  }
+
+  function min(values, valueof) {
+    var n = values.length,
+        i = -1,
+        value,
+        min;
+
+    if (valueof == null) {
+      while (++i < n) { // Find the first comparable value.
+        if ((value = values[i]) != null && value >= value) {
+          min = value;
+          while (++i < n) { // Compare the remaining values.
+            if ((value = values[i]) != null && min > value) {
+              min = value;
+            }
+          }
+        }
+      }
+    }
+
+    else {
+      while (++i < n) { // Find the first comparable value.
+        if ((value = valueof(values[i], i, values)) != null && value >= value) {
+          min = value;
+          while (++i < n) { // Compare the remaining values.
+            if ((value = valueof(values[i], i, values)) != null && min > value) {
+              min = value;
+            }
+          }
+        }
+      }
+    }
+
+    return min;
+  }
+
   var slice = Array.prototype.slice;
 
   function identity(x) {
@@ -5652,6 +5722,8 @@
           console.error(error);
       }
       else {
+          var minn = void 0;
+          var maxx = void 0;
           var prepared = data.data.children.map(function (d) {
               return {
                   date: new Date(d.data.created * 1000),
@@ -5662,6 +5734,8 @@
           //축 도메인 설정
           xScale.domain(extent(prepared, function (d) { return d.date; })).nice();
           xAxisGroup.call(xAxis);
+          maxx = max(prepared, function (d) { return d.score; });
+          minn = min(prepared, function (d) { return d.score; });
           yScale.domain(extent(prepared, function (d) { return d.score; })).nice();
           yAxisGroup.call(yAxis);
           //데이터 실어주기
@@ -5670,11 +5744,19 @@
           //표 초기화
           dataBound.exit().remove();
           var enterSelection = dataBound.enter().append("g").classed("post", true);
-          enterSelection.append("circle").attr("r", 2).style("fill", "red");
+          // enterSelection.append("circle").attr("r", 2).style("fill", "red");
           // update all existing points
+          enterSelection.merge(dataBound);
+          //   .attr(
+          //     "transform",
+          //     (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
+          //   );
           enterSelection
-              .merge(dataBound)
-              .attr("transform", function (d, i) { return "translate(" + xScale(d.date) + "," + yScale(d.score) + ")"; });
+              .append("rect")
+              .attr("height", function (d, i) { return yScale(d.score); })
+              .attr("width", 2)
+              .attr('y', function (d) { return plotHeight - yScale(d.score); })
+              .attr('x', function (d) { return xScale(d.date); });
       }
   });
 

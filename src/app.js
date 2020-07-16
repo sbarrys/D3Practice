@@ -47,6 +47,8 @@ d3.json("https://api.reddit.com", function (error, data) {
         console.error(error);
     }
     else {
+        var minn = void 0;
+        var maxx = void 0;
         var prepared = data.data.children.map(function (d) {
             return {
                 date: new Date(d.data.created * 1000),
@@ -57,6 +59,8 @@ d3.json("https://api.reddit.com", function (error, data) {
         //축 도메인 설정
         xScale.domain(d3.extent(prepared, function (d) { return d.date; })).nice();
         xAxisGroup.call(xAxis);
+        maxx = d3.max(prepared, function (d) { return d.score; });
+        minn = d3.min(prepared, function (d) { return d.score; });
         yScale.domain(d3.extent(prepared, function (d) { return d.score; })).nice();
         yAxisGroup.call(yAxis);
         //데이터 실어주기
@@ -65,11 +69,19 @@ d3.json("https://api.reddit.com", function (error, data) {
         //표 초기화
         dataBound.exit().remove();
         var enterSelection = dataBound.enter().append("g").classed("post", true);
-        enterSelection.append("circle").attr("r", 2).style("fill", "red");
+        // enterSelection.append("circle").attr("r", 2).style("fill", "red");
         // update all existing points
+        enterSelection.merge(dataBound);
+        //   .attr(
+        //     "transform",
+        //     (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
+        //   );
         enterSelection
-            .merge(dataBound)
-            .attr("transform", function (d, i) { return "translate(" + xScale(d.date) + "," + yScale(d.score) + ")"; });
+            .append("rect")
+            .attr("height", function (d, i) { return yScale(d.score); })
+            .attr("width", 2)
+            .attr('y', function (d) { return plotHeight - yScale(d.score); })
+            .attr('x', function (d) { return xScale(d.date); });
     }
 });
 //# sourceMappingURL=app.js.map

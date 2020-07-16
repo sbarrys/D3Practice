@@ -45,13 +45,15 @@ let yAxis = d3.axisLeft(yScale);
 //ploat 에  axis 추가.
 let yAxisGroup = plotGroup.append("g").classed("y", true).classed("axis", true);
 ///////////////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////////////
 //데이터 바인딩
 d3.json<redditObject>("https://api.reddit.com", (error, data) => {
   if (error) {
     console.error(error);
   } else {
+    let minn: number;
+    let maxx: number;
+
     let prepared = data.data.children.map((d) => {
       return {
         date: new Date(d.data.created * 1000),
@@ -62,6 +64,8 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
     //축 도메인 설정
     xScale.domain(d3.extent(prepared, (d) => d.date)).nice();
     xAxisGroup.call(xAxis);
+    maxx = d3.max(prepared, (d) => d.score);
+    minn = d3.min(prepared, (d) => d.score);
     yScale.domain(d3.extent(prepared, (d) => d.score)).nice();
     yAxisGroup.call(yAxis);
 
@@ -81,13 +85,19 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
       unknown
     > = dataBound.enter().append("g").classed("post", true);
 
-    enterSelection.append("circle").attr("r", 2).style("fill", "red");
+    // enterSelection.append("circle").attr("r", 2).style("fill", "red");
     // update all existing points
+    enterSelection.merge(dataBound);
+    //   .attr(
+    //     "transform",
+    //     (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
+    //   );
+
     enterSelection
-      .merge(dataBound)
-      .attr(
-        "transform",
-        (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
-      );
-  }
+      .append("rect")
+      .attr("height", (d, i) => yScale(d.score))
+      .attr("width", 2)
+      .attr('y',(d)=>plotHeight-yScale(d.score))
+      .attr('x',(d)=>xScale(d.date)
+    }
 });
