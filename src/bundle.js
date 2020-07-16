@@ -5744,19 +5744,11 @@
           //표 초기화
           dataBound.exit().remove();
           var enterSelection = dataBound.enter().append("g").classed("post", true);
-          // enterSelection.append("circle").attr("r", 2).style("fill", "red");
+          enterSelection.append("circle").attr("r", 2).style("fill", "red");
           // update all existing points
-          enterSelection.merge(dataBound);
-          //   .attr(
-          //     "transform",
-          //     (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
-          //   );
           enterSelection
-              .append("rect")
-              .attr("height", function (d, i) { return yScale(d.score); })
-              .attr("width", 2)
-              .attr('y', function (d) { return plotHeight - yScale(d.score); })
-              .attr('x', function (d) { return xScale(d.date); });
+              .merge(dataBound)
+              .attr("transform", function (d, i) { return "translate(" + xScale(d.date) + "," + (plotHeight - yScale(d.score)) + ")"; });
       }
   });
 

@@ -85,19 +85,13 @@ d3.json<redditObject>("https://api.reddit.com", (error, data) => {
       unknown
     > = dataBound.enter().append("g").classed("post", true);
 
-    // enterSelection.append("circle").attr("r", 2).style("fill", "red");
+    enterSelection.append("circle").attr("r", 2).style("fill", "red");
     // update all existing points
-    enterSelection.merge(dataBound);
-    //   .attr(
-    //     "transform",
-    //     (d, i) => `translate(${xScale(d.date)},${yScale(d.score)})`
-    //   );
-
     enterSelection
-      .append("rect")
-      .attr("height", (d, i) => yScale(d.score))
-      .attr("width", 2)
-      .attr('y',(d)=>plotHeight-yScale(d.score))
-      .attr('x',(d)=>xScale(d.date)
-    }
+      .merge(dataBound)
+      .attr(
+        "transform",
+        (d, i) => `translate(${xScale(d.date)},${plotHeight - yScale(d.score)})`
+      );
+  }
 });
